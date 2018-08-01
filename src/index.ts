@@ -22,6 +22,7 @@ const MIME_TYPE = 'application/nii';
  */
 const CLASS_NAME = 'mimerenderer-nii';
 declare var papaya: any;
+declare var papayaLoadableImages: any;
 
 /**
  * A widget for rendering nii.
@@ -43,7 +44,7 @@ class OutputWidget extends Widget implements IRenderMime.IRenderer {
     s.onload = () => {
       console.log('papaya_object')
       papaya.Container.addViewer('papaya', {}, function(){
-        console.log('here is this callback 1');
+        console.log('here is this callback 6');
       });
       this._papaya = papaya;
     };
@@ -65,8 +66,13 @@ class OutputWidget extends Widget implements IRenderMime.IRenderer {
 
     let data = model.data[this._mimeType] as string;
     //
-    papaya.foodata = data;
-    this._papaya.Container.resetViewer(0, {encodedImages: ['papaya.foodata']});
+
+    // papaya.foodata = data;
+    papayaLoadableImages.push({
+      name: 'foo.nii',
+      encode: data,
+    });
+    this._papaya.Container.resetViewer(0, {encodedImages: ['foo.nii'], files:['foo.nii'], name:'foo.nii'});
     console.log(this._mimeType);
     console.log(this._papaya);
     //this.node.textContent = data;
