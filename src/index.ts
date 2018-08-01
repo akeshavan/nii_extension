@@ -65,76 +65,9 @@ class OutputWidget extends Widget implements IRenderMime.IRenderer {
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
 
     let data = model.data[this._mimeType] as string;
-    //
 
-    var Base64Binary = {
-        _keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
-
-        /* will return a  Uint8Array type */
-        decodeArrayBuffer: function(input: any) {
-            var lkey1 = this._keyStr.indexOf(input.charAt(input.length-1));
-            var lkey2 = this._keyStr.indexOf(input.charAt(input.length-2));
-
-            var bytes = (input.length/4) * 3;
-            if (lkey1 == 64) bytes--; //padding chars, so skip
-            if (lkey2 == 64) bytes--; //padding chars, so skip
-
-            var ab = new ArrayBuffer(bytes);
-            this.decode(input, ab, bytes);
-
-            return ab;
-        },
-
-        decode: function(input: any, arrayBuffer: any, bytes: any) {
-            var uarray;
-            var chr1, chr2, chr3;
-            var enc1, enc2, enc3, enc4;
-            var i = 0;
-            var j = 0;
-
-            if (arrayBuffer)
-                uarray = new Uint8Array(arrayBuffer);
-            else
-                uarray = new Uint8Array(bytes);
-
-            input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-
-            for (i=0; i<bytes; i+=3) {
-                //get the 3 octects in 4 ascii chars
-                enc1 = this._keyStr.indexOf(input.charAt(j++));
-                enc2 = this._keyStr.indexOf(input.charAt(j++));
-                enc3 = this._keyStr.indexOf(input.charAt(j++));
-                enc4 = this._keyStr.indexOf(input.charAt(j++));
-
-                chr1 = (enc1 << 2) | (enc2 >> 4);
-                chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-                chr3 = ((enc3 & 3) << 6) | enc4;
-
-                uarray[i] = chr1;
-                if (enc3 != 64) uarray[i+1] = chr2;
-                if (enc4 != 64) uarray[i+2] = chr3;
-            }
-
-            return uarray;
-        }
-    }
-
-    papaya.volume.Volume.prototype.readNextEncodedData = function (vol: any, index: any , names: any) {
-        if (index < names.length) {
-            try {
-                //console.log('base64 stuffff', names[index], index);
-                vol.rawData[index] = Base64Binary.decodeArrayBuffer(names[index]);
-                vol.compressed = this.fileIsCompressed(this.fileName, vol.rawData[index]);
-                setTimeout(function () {vol.readNextEncodedData(vol, index + 1, names); }, 0);
-            } catch (err) {
-                if (vol) {
-                    vol.error = new Error("There was a problem reading that file:\n\n" + err.message);
-                    vol.finishedLoad();
-                }
-            }
-        } else {
-            vol.decompress(vol);
-        }
+    papaya.utilities.ObjectUtils.dereference = function (name: string) {
+      return name;
     };
     // papaya.foodata = data;
     papayaLoadableImages.push({
