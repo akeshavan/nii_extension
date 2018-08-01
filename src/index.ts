@@ -9,6 +9,7 @@ import {
 } from '@phosphor/widgets';
 
 import '../style/index.css';
+import '../style/papaya.css';
 
 /**
  * The default mime type for the extension.
@@ -20,7 +21,7 @@ const MIME_TYPE = 'application/nii';
  * The class name added to the extension.
  */
 const CLASS_NAME = 'mimerenderer-nii';
-
+declare var papaya: any;
 
 /**
  * A widget for rendering nii.
@@ -34,21 +35,48 @@ class OutputWidget extends Widget implements IRenderMime.IRenderer {
     super();
     this._mimeType = options.mimeType;
     this.addClass(CLASS_NAME);
+
+    // AK's hack:
+    var s = document.createElement('script');
+    s.type = 'text/javascript';
+    s.src = 'https://cdn.rawgit.com/rii-mango/Papaya/67d9734a/release/current/standard/papaya.js'; //'https://cdn.rawgit.com/rii-mango/Papaya/67d9734a/release/current/nojquery/papaya.js';
+    s.onload = () => {
+      console.log('papaya_object')
+      papaya.Container.addViewer('papaya', {}, function(){
+        console.log('here is this callback 1');
+      });
+      this._papaya = papaya;
+    };
+    this.node.appendChild(s);
+
+    // Add an image element to the panel
+    let pdiv = document.createElement('div');
+    pdiv.style.height = "0px";
+    pdiv.classList.add("papaya");
+    pdiv.id = "papaya";
+    this.node.appendChild(pdiv);
+
   }
 
   /**
    * Render nii into this widget's node.
    */
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
-    
+
     let data = model.data[this._mimeType] as string;
-    this.node.textContent = data;
-    
+    //
+    papaya.foodata = data;
+    this._papaya.Container.resetViewer(0, {encodedImages: ['papaya.foodata']});
+    console.log(this._mimeType);
+    console.log(this._papaya);
+    //this.node.textContent = data;
+
     return Promise.resolve();
 
   }
 
   private _mimeType: string;
+  private _papaya: any;
 }
 
 
@@ -73,10 +101,12 @@ const extension: IRenderMime.IExtension = {
   fileTypes: [{
     name: 'nii',
     mimeTypes: [MIME_TYPE],
+    fileFormat: 'base64',
     extensions: ['.nii'],
   }],
   documentWidgetFactoryOptions: {
     name: 'nii_viewer',
+    modelName: 'base64',
     primaryFileType: 'nii',
     fileTypes: ['nii'],
     defaultFor: ['nii'],
