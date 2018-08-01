@@ -177,14 +177,14 @@ const extension: IRenderMime.IExtension = {
     name: 'nii',
     mimeTypes: [MIME_TYPE],
     fileFormat: 'base64',
-    extensions: ['.nii'],
+    extensions: ['.nii', '.nii.gz'],
   }],
   documentWidgetFactoryOptions: {
     name: 'nii_viewer',
     modelName: 'base64',
     primaryFileType: 'nii',
-    fileTypes: ['nii'],
-    defaultFor: ['nii'],
+    fileTypes: ['nii', 'niigz'],
+    defaultFor: ['nii', 'niigz'],
   }
 };
 

@@ -1,3 +1,7 @@
 .mimerenderer-nii {
   overflow-y: scroll;
 }
+
+.papaya:before {
+  visibility: hidden !important;
+}
